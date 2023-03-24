@@ -1,0 +1,61 @@
+### Get all categories
+GET http://localhost:3001/api/categories
+Accept:application/json
+
+### Create new categories
+POST http://localhost:3001/api/categories
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "gulangan"
+}
+
+### Get category by Id
+GET http://localhost:3001/api/categories/2
+Accept: application/json
+
+### Update category by Id
+PUT http://localhost:3001/api/categories/7
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Listrik dinamis"
+}
+
+### Delete category
+DELETE http://localhost:3001/api/categories/2
+Accept: application/json
+
+
+### LEVEL
+### Get all level
+GET http://localhost:3001/api/levels
+Accept:application/json
+
+### Create new level
+POST http://localhost:3001/api/levels
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "biasa aja"
+}
+
+### Get level by Id
+GET http://localhost:3001/api/levels/3
+Accept: application/json
+
+### Update level by Id
+PUT http://localhost:3001/api/levels/2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "user"
+}
+
+### Delete level
+DELETE http://localhost:3001/api/levels/3
+Accept: application/json
