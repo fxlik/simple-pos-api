@@ -1,3 +1,6 @@
+#-----------------------------
+#MANAGE CATEGORY
+#-----------------------------
 ### Get all categories
 GET http://localhost:3001/api/categories
 Accept:application/json
@@ -29,7 +32,9 @@ DELETE http://localhost:3001/api/categories/2
 Accept: application/json
 
 
-### LEVEL
+#-----------------------------
+#MANAGE LEVEL
+#-----------------------------
 ### Get all level
 GET http://localhost:3001/api/levels
 Accept:application/json
@@ -59,3 +64,145 @@ Content-Type: application/json
 ### Delete level
 DELETE http://localhost:3001/api/levels/3
 Accept: application/json
+
+
+#-----------------------------
+#MANAGE SUPPLIER
+#-----------------------------
+### Get all supplier
+GET http://localhost:3001/api/suppliers
+Accept:application/json
+
+### Create new supplier
+POST http://localhost:3001/api/suppliers
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "GOJEK INDONESIA",
+  "email": "GOJEK@gmail.com",
+  "telp": "65343434334"
+}
+
+### Get supplier by Id
+GET http://localhost:3001/api/suppliers/1
+Accept: application/json
+
+### Update supplier by Id
+PUT http://localhost:3001/api/suppliers/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "CV MAJU BERSAMA KITA JAYA",
+  "email": "supplier@gmail.com",
+  "telp": "6289757646"
+}
+
+### Delete supplier
+DELETE http://localhost:3001/api/suppliers/2
+
+
+#-----------------------------
+#MANAGE TRANSACTION STATUS
+#-----------------------------
+### Get all transaction status
+GET http://localhost:3001/api/transaction-status
+Accept:application/json
+
+### Create new transaction status
+POST http://localhost:3001/api/transaction-status
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "test",
+  "disabled": false
+}
+
+### Get transaction status by Id
+GET http://localhost:3001/api/transaction-status/7
+Accept: application/json
+
+### Update transaction status by Id
+PUT http://localhost:3001/api/transaction-status/7
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "test",
+  "disabled": false
+}
+
+### Delete transaction status
+DELETE http://localhost:3001/api/transaction-status/5
+
+
+#-----------------------------
+#MANAGE TRANSACTION TYPE
+#-----------------------------
+### Get all transaction type
+GET http://localhost:3001/api/transaction-type
+Accept:application/json
+
+### Create new transaction type
+POST http://localhost:3001/api/transaction-type
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "test",
+  "disabled": false
+}
+
+### Get transaction type by Id
+GET http://localhost:3001/api/transaction-type/3
+Accept: application/json
+
+### Update transaction type by Id
+PUT http://localhost:3001/api/transaction-type/3
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "gulak",
+  "disabled": true
+}
+
+### Delete transaction type
+DELETE http://localhost:3001/api/transaction-type/3
+
+
+#-----------------------------
+#MANAGE QTY TYPE
+#-----------------------------
+### Get all qty type
+GET http://localhost:3001/api/qty-type
+Accept:application/json
+
+### Create new qty type
+POST http://localhost:3001/api/qty-type
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Pack",
+  "disabled": false
+}
+
+### Get qty type by Id
+GET http://localhost:3001/api/qty-type/2
+Accept: application/json
+
+### Update qty type by Id
+PUT http://localhost:3001/api/qty-type/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Kg",
+  "disabled": false
+}
+
+### Delete qty type
+DELETE http://localhost:3001/api/qty-type/1

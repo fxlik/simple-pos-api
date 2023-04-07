@@ -32,12 +32,52 @@ var levelSet = wire.NewSet(
 	wire.Bind(new(controller.LevelController), new(*controller.LevelControllerImpl)),
 )
 
+var supplierSet = wire.NewSet(
+	repository.NewSupplierRepositoryImpl,
+	wire.Bind(new(repository.SupplierRepository), new(*repository.SupplierRepositoryImpl)),
+	service.NewSupplierServiceImpl,
+	wire.Bind(new(service.SupplierService), new(*service.SupplierServiceImpl)),
+	controller.NewSupplierControllerImpl,
+	wire.Bind(new(controller.SupplierController), new(*controller.SupplierControllerImpl)),
+)
+
+var transactionStatusSet = wire.NewSet(
+	repository.NewTransactionStatusRepositoryImpl,
+	wire.Bind(new(repository.TransactionStatusRepository), new(*repository.TransactionStatusRepositoryImpl)),
+	service.NewTransactionStatusServiceImpl,
+	wire.Bind(new(service.TransactionStatusService), new(*service.TransactionStatusServiceImpl)),
+	controller.NewTransactionStatusControllerImpl,
+	wire.Bind(new(controller.TransactionStatusController), new(*controller.TransactionStatusControllerImpl)),
+)
+
+var transactionTypeSet = wire.NewSet(
+	repository.NewTransactionTypeRepositoryImpl,
+	wire.Bind(new(repository.TransactionTypeRepository), new(*repository.TransactionTypeRepositoryImpl)),
+	service.NewTransactionTypeServiceImpl,
+	wire.Bind(new(service.TransactionTypeService), new(*service.TransactionTypeServiceImpl)),
+	controller.NewTransactionTypeControllerImpl,
+	wire.Bind(new(controller.TransactionTypeController), new(*controller.TransactionTypeControllerImpl)),
+)
+
+var qtyTypeSet = wire.NewSet(
+	repository.NewQtyTypeRepositoryImpl,
+	wire.Bind(new(repository.QtyTypeRepository), new(*repository.QtyTypeRepositoryImpl)),
+	service.NewQtyTypeServiceImpl,
+	wire.Bind(new(service.QtyTypeService), new(*service.QtyTypeServiceImpl)),
+	controller.NewQtyTypeControllerImpl,
+	wire.Bind(new(controller.QtyTypeController), new(*controller.QtyTypeControllerImpl)),
+)
+
 func InitializedServer() *http.Server {
 	wire.Build(
 		app.NewDB,
 		validator.New,
 		categorySet,
 		levelSet,
+		supplierSet,
+		transactionStatusSet,
+		transactionTypeSet,
+		qtyTypeSet,
 		app.NewRouter,
 		wire.Bind(new(http.Handler), new(*httprouter.Router)),
 		NewServer,

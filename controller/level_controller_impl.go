@@ -19,11 +19,11 @@ func NewLevelControllerImpl(levelService service.LevelService) *LevelControllerI
 	}
 }
 
-func (controller *LevelControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+func (controller *LevelControllerImpl) Save(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	levelCreateRequest := web.LevelCreateRequest{}
 	helper.ReadFromRequestBody(request, &levelCreateRequest)
 
-	levelResponse := controller.LevelService.Create(request.Context(), levelCreateRequest)
+	levelResponse := controller.LevelService.Save(request.Context(), levelCreateRequest)
 	webResponse := web.Response{
 		Code:   http.StatusOK,
 		Status: "Ok",

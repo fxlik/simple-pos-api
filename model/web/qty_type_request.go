@@ -3,7 +3,7 @@ package web
 import "time"
 
 type QtyTypeCreateRequest struct {
-	Name      string    `validate:"required, min=1, max=255" json:"name"`
+	Name      string    `validate:"required,min=1,max=255" json:"name"`
 	Disabled  bool      `json:"disabled"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

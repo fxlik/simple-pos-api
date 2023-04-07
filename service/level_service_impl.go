@@ -25,7 +25,7 @@ func NewLevelServiceImpl(levelRepository repository.LevelRepository, DB *sql.DB,
 	}
 }
 
-func (service *LevelServiceImpl) Create(ctx context.Context, request web.LevelCreateRequest) web.LevelResponse {
+func (service *LevelServiceImpl) Save(ctx context.Context, request web.LevelCreateRequest) web.LevelResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 

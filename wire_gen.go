@@ -31,7 +31,19 @@ func InitializedServer() *http.Server {
 	levelRepositoryImpl := repository.NewLevelRepositoryImpl()
 	levelServiceImpl := service.NewLevelServiceImpl(levelRepositoryImpl, db, validate)
 	levelControllerImpl := controller.NewLevelControllerImpl(levelServiceImpl)
-	router := app.NewRouter(categoryControllerImpl, levelControllerImpl)
+	supplierRepositoryImpl := repository.NewSupplierRepositoryImpl()
+	supplierServiceImpl := service.NewSupplierServiceImpl(supplierRepositoryImpl, db, validate)
+	supplierControllerImpl := controller.NewSupplierControllerImpl(supplierServiceImpl)
+	transactionStatusRepositoryImpl := repository.NewTransactionStatusRepositoryImpl()
+	transactionStatusServiceImpl := service.NewTransactionStatusServiceImpl(transactionStatusRepositoryImpl, db, validate)
+	transactionStatusControllerImpl := controller.NewTransactionStatusControllerImpl(transactionStatusServiceImpl)
+	transactionTypeRepositoryImpl := repository.NewTransactionTypeRepositoryImpl()
+	transactionTypeServiceImpl := service.NewTransactionTypeServiceImpl(transactionTypeRepositoryImpl, db, validate)
+	transactionTypeControllerImpl := controller.NewTransactionTypeControllerImpl(transactionTypeServiceImpl)
+	qtyTypeRepositoryImpl := repository.NewQtyTypeRepositoryImpl()
+	qtyTypeServiceImpl := service.NewQtyTypeServiceImpl(qtyTypeRepositoryImpl, db, validate)
+	qtyTypeControllerImpl := controller.NewQtyTypeControllerImpl(qtyTypeServiceImpl)
+	router := app.NewRouter(categoryControllerImpl, levelControllerImpl, supplierControllerImpl, transactionStatusControllerImpl, transactionTypeControllerImpl, qtyTypeControllerImpl)
 	server := NewServer(router)
 	return server
 }
@@ -41,3 +53,11 @@ func InitializedServer() *http.Server {
 var categorySet = wire.NewSet(repository.NewCategoryRepositoryImpl, wire.Bind(new(repository.CategoryRepository), new(*repository.CategoryRepositoryImpl)), service.NewCategoryServiceImpl, wire.Bind(new(service.CategoryService), new(*service.CategoryServiceImpl)), controller.NewCategoryControllerImpl, wire.Bind(new(controller.CategoryController), new(*controller.CategoryControllerImpl)))
 
 var levelSet = wire.NewSet(repository.NewLevelRepositoryImpl, wire.Bind(new(repository.LevelRepository), new(*repository.LevelRepositoryImpl)), service.NewLevelServiceImpl, wire.Bind(new(service.LevelService), new(*service.LevelServiceImpl)), controller.NewLevelControllerImpl, wire.Bind(new(controller.LevelController), new(*controller.LevelControllerImpl)))
+
+var supplierSet = wire.NewSet(repository.NewSupplierRepositoryImpl, wire.Bind(new(repository.SupplierRepository), new(*repository.SupplierRepositoryImpl)), service.NewSupplierServiceImpl, wire.Bind(new(service.SupplierService), new(*service.SupplierServiceImpl)), controller.NewSupplierControllerImpl, wire.Bind(new(controller.SupplierController), new(*controller.SupplierControllerImpl)))
+
+var transactionStatusSet = wire.NewSet(repository.NewTransactionStatusRepositoryImpl, wire.Bind(new(repository.TransactionStatusRepository), new(*repository.TransactionStatusRepositoryImpl)), service.NewTransactionStatusServiceImpl, wire.Bind(new(service.TransactionStatusService), new(*service.TransactionStatusServiceImpl)), controller.NewTransactionStatusControllerImpl, wire.Bind(new(controller.TransactionStatusController), new(*controller.TransactionStatusControllerImpl)))
+
+var transactionTypeSet = wire.NewSet(repository.NewTransactionTypeRepositoryImpl, wire.Bind(new(repository.TransactionTypeRepository), new(*repository.TransactionTypeRepositoryImpl)), service.NewTransactionTypeServiceImpl, wire.Bind(new(service.TransactionTypeService), new(*service.TransactionTypeServiceImpl)), controller.NewTransactionTypeControllerImpl, wire.Bind(new(controller.TransactionTypeController), new(*controller.TransactionTypeControllerImpl)))
+
+var qtyTypeSet = wire.NewSet(repository.NewQtyTypeRepositoryImpl, wire.Bind(new(repository.QtyTypeRepository), new(*repository.QtyTypeRepositoryImpl)), service.NewQtyTypeServiceImpl, wire.Bind(new(service.QtyTypeService), new(*service.QtyTypeServiceImpl)), controller.NewQtyTypeControllerImpl, wire.Bind(new(controller.QtyTypeController), new(*controller.QtyTypeControllerImpl)))

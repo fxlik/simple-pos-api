@@ -6,7 +6,7 @@ import (
 )
 
 type LevelService interface {
-	Create(ctx context.Context, request web.LevelCreateRequest) web.LevelResponse
+	Save(ctx context.Context, request web.LevelCreateRequest) web.LevelResponse
 	Update(ctx context.Context, request web.LevelUpdateRequest) web.LevelResponse
 	Delete(ctx context.Context, levelId int32)
 	FindById(ctx context.Context, levelId int32) web.LevelResponse
