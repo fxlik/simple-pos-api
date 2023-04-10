@@ -68,6 +68,15 @@ var qtyTypeSet = wire.NewSet(
 	wire.Bind(new(controller.QtyTypeController), new(*controller.QtyTypeControllerImpl)),
 )
 
+var productSet = wire.NewSet(
+	repository.NewProductRepositoryImpl,
+	wire.Bind(new(repository.ProductRepository), new(*repository.ProductRepositoryImpl)),
+	service.NewProductServiceImpl,
+	wire.Bind(new(service.ProductService), new(*service.ProductServiceImpl)),
+	controller.NewProductControllerImpl,
+	wire.Bind(new(controller.ProductController), new(*controller.ProductControllerImpl)),
+)
+
 func InitializedServer() *http.Server {
 	wire.Build(
 		app.NewDB,
@@ -78,6 +87,7 @@ func InitializedServer() *http.Server {
 		transactionStatusSet,
 		transactionTypeSet,
 		qtyTypeSet,
+		productSet,
 		app.NewRouter,
 		wire.Bind(new(http.Handler), new(*httprouter.Router)),
 		NewServer,

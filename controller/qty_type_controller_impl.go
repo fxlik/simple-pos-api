@@ -7,6 +7,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type QtyTypeControllerImpl struct {
@@ -21,8 +22,16 @@ func NewQtyTypeControllerImpl(qtyTypeService service.QtyTypeService) *QtyTypeCon
 
 func (controller *QtyTypeControllerImpl) Save(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	qtyTypeCreateRequest := web.QtyTypeCreateRequest{}
-	helper.ReadFromRequestBody(request, &qtyTypeCreateRequest)
-
+	contentType := request.Header.Get("Content-Type")
+	switch {
+	case strings.HasPrefix(contentType, "multipart/form-data"):
+		helper.ReadFromRequestMultipartFormData(request, &qtyTypeCreateRequest)
+	case strings.HasPrefix(contentType, "application/x-www-form-urlencoded"):
+		helper.ReadFromRequestForm(request, &qtyTypeCreateRequest)
+	default:
+		//if content type is "application/json"
+		helper.ReadFromRequestBody(request, &qtyTypeCreateRequest)
+	}
 	qtyTypeResponse := controller.QtyTypeService.Save(request.Context(), qtyTypeCreateRequest)
 	webResponse := web.Response{
 		Code:   http.StatusOK,

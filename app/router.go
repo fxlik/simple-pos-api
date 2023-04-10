@@ -13,6 +13,7 @@ func NewRouter(
 	transactionStatusController controller.TransactionStatusController,
 	transactionTypeController controller.TransactionTypeController,
 	qtyTypeController controller.QtyTypeController,
+	productController controller.ProductController,
 ) *httprouter.Router {
 	router := httprouter.New()
 	router.GET("/api/categories", categoryController.FindAll)
@@ -50,6 +51,12 @@ func NewRouter(
 	router.POST("/api/qty-type", qtyTypeController.Save)
 	router.PUT("/api/qty-type/:qtyTypeId", qtyTypeController.Update)
 	router.DELETE("/api/qty-type/:qtyTypeId", qtyTypeController.Delete)
+
+	router.GET("/api/products", productController.FindAll)
+	router.GET("/api/products/:productId", productController.FindById)
+	router.POST("/api/products", productController.Save)
+	router.PUT("/api/products/:productId", productController.Update)
+	router.DELETE("/api/products/:productId", productController.Delete)
 
 	router.PanicHandler = exception.ErrorHandler
 	return router

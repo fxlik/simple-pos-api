@@ -43,7 +43,10 @@ func InitializedServer() *http.Server {
 	qtyTypeRepositoryImpl := repository.NewQtyTypeRepositoryImpl()
 	qtyTypeServiceImpl := service.NewQtyTypeServiceImpl(qtyTypeRepositoryImpl, db, validate)
 	qtyTypeControllerImpl := controller.NewQtyTypeControllerImpl(qtyTypeServiceImpl)
-	router := app.NewRouter(categoryControllerImpl, levelControllerImpl, supplierControllerImpl, transactionStatusControllerImpl, transactionTypeControllerImpl, qtyTypeControllerImpl)
+	productRepositoryImpl := repository.NewProductRepositoryImpl()
+	productServiceImpl := service.NewProductServiceImpl(productRepositoryImpl, db, validate)
+	productControllerImpl := controller.NewProductControllerImpl(productServiceImpl)
+	router := app.NewRouter(categoryControllerImpl, levelControllerImpl, supplierControllerImpl, transactionStatusControllerImpl, transactionTypeControllerImpl, qtyTypeControllerImpl, productControllerImpl)
 	server := NewServer(router)
 	return server
 }
@@ -61,3 +64,5 @@ var transactionStatusSet = wire.NewSet(repository.NewTransactionStatusRepository
 var transactionTypeSet = wire.NewSet(repository.NewTransactionTypeRepositoryImpl, wire.Bind(new(repository.TransactionTypeRepository), new(*repository.TransactionTypeRepositoryImpl)), service.NewTransactionTypeServiceImpl, wire.Bind(new(service.TransactionTypeService), new(*service.TransactionTypeServiceImpl)), controller.NewTransactionTypeControllerImpl, wire.Bind(new(controller.TransactionTypeController), new(*controller.TransactionTypeControllerImpl)))
 
 var qtyTypeSet = wire.NewSet(repository.NewQtyTypeRepositoryImpl, wire.Bind(new(repository.QtyTypeRepository), new(*repository.QtyTypeRepositoryImpl)), service.NewQtyTypeServiceImpl, wire.Bind(new(service.QtyTypeService), new(*service.QtyTypeServiceImpl)), controller.NewQtyTypeControllerImpl, wire.Bind(new(controller.QtyTypeController), new(*controller.QtyTypeControllerImpl)))
+
+var productSet = wire.NewSet(repository.NewProductRepositoryImpl, wire.Bind(new(repository.ProductRepository), new(*repository.ProductRepositoryImpl)), service.NewProductServiceImpl, wire.Bind(new(service.ProductService), new(*service.ProductServiceImpl)), controller.NewProductControllerImpl, wire.Bind(new(controller.ProductController), new(*controller.ProductControllerImpl)))

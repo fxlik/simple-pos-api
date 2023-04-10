@@ -186,7 +186,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "Pack",
+  "name": "test 7",
   "disabled": false
 }
 
@@ -195,14 +195,19 @@ GET http://localhost:3001/api/qty-type/2
 Accept: application/json
 
 ### Update qty type by Id
-PUT http://localhost:3001/api/qty-type/1
+PUT http://localhost:3001/api/qty-type/2
 Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "Kg",
-  "disabled": false
+  "name": "Pcs",
+  "disabled": true
 }
 
 ### Delete qty type
 DELETE http://localhost:3001/api/qty-type/1
+
+### POST FILE
+POST http://localhost:3001/api/qty-type
+Accept: application/x-www-form-urlencoded
+Content-Type: multipart/form-data

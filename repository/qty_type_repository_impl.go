@@ -63,7 +63,7 @@ func (repository *QtyTypeRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx
 	var qtyTypes []domain.QtyType
 	for rows.Next() {
 		qtyType := domain.QtyType{}
-		err := rows.Scan(&qtyType.Id, &qtyType.Name)
+		err := rows.Scan(&qtyType.Id, &qtyType.Name, &qtyType.Disabled, &qtyType.CreatedAt, &qtyType.UpdatedAt)
 		helper.PanicIfError(err)
 		qtyTypes = append(qtyTypes, qtyType)
 	}
