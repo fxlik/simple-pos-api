@@ -12,7 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -57,15 +56,8 @@ func (controller *ProductControllerImpl) Save(writer http.ResponseWriter, reques
 	productCreateRequest.Image = fileName
 
 	contentType := request.Header.Get("Content-Type")
-	switch {
-	case strings.HasPrefix(contentType, "multipart/form-data"):
-		helper.ReadFromRequestMultipartFormData(request, &productCreateRequest)
-	case strings.HasPrefix(contentType, "application/x-www-form-urlencoded"):
-		helper.ReadFromRequestForm(request, &productCreateRequest)
-	default:
-		//if content type is "application/json"
-		helper.ReadFromRequestBody(request, &productCreateRequest)
-	}
+	helper.CheckContentType(contentType, request, &productCreateRequest)
+
 	productResponse := controller.ProductService.Save(request.Context(), productCreateRequest)
 	webResponse := web.Response{
 		Code:   http.StatusOK,
@@ -77,6 +69,7 @@ func (controller *ProductControllerImpl) Save(writer http.ResponseWriter, reques
 
 func (controller *ProductControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	productUpdateRequest := web.ProductUpdateRequest{}
+
 	//file upload handing
 	var fileName string
 	file, handler, err := request.FormFile("image")
@@ -87,12 +80,16 @@ func (controller *ProductControllerImpl) Update(writer http.ResponseWriter, requ
 	helper.PanicIfError(err)
 
 	if filetype.IsImage(fileByte) {
-		fileName = "uploads/product/" + strconv.FormatInt(time.Now().Unix(), 10) + filepath.Ext(handler.Filename)
-		err := os.WriteFile(fileName, fileByte, 0777)
+		fileName = "resources/uploads/" + "product-" + strconv.FormatInt(time.Now().Unix(), 10) + filepath.Ext(handler.Filename)
+		err := os.WriteFile(fileName, fileByte, 0666)
 		helper.PanicIfError(err)
 	} else {
-		errors.New("file type is not supported")
+		newError := errors.New("file type is not supported")
+		helper.PanicIfError(newError)
 	}
+
+	contentType := request.Header.Get("Content-Type")
+	helper.CheckContentType(contentType, request, &productUpdateRequest)
 
 	productId := params.ByName("productId")
 	id, err := strconv.Atoi(productId)
@@ -100,16 +97,6 @@ func (controller *ProductControllerImpl) Update(writer http.ResponseWriter, requ
 	productUpdateRequest.Id = int32(id)
 	productUpdateRequest.Image = fileName
 
-	contentType := request.Header.Get("Content-Type")
-	switch {
-	case strings.HasPrefix(contentType, "multipart/form-data"):
-		helper.ReadFromRequestMultipartFormData(request, &productUpdateRequest)
-	case strings.HasPrefix(contentType, "application/x-www-form-urlencoded"):
-		helper.ReadFromRequestForm(request, &productUpdateRequest)
-	default:
-		//if content type is "application/json"
-		helper.ReadFromRequestBody(request, &productUpdateRequest)
-	}
 	productResponse := controller.ProductService.Update(request.Context(), productUpdateRequest)
 	webResponse := web.Response{
 		Code:   http.StatusOK,

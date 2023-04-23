@@ -7,6 +7,7 @@ import (
 
 type ProductPriceResponse struct {
 	Id        int32     `json:"id"`
+	ProductId int32     `json:"product_id"`
 	Price     int32     `json:"price"`
 	CreatedBy int32     `json:"created_by"`
 	CreatedAt time.Time `json:"created_at"`
@@ -16,6 +17,7 @@ type ProductPriceResponse struct {
 func ToProductPriceResponse(productPrice domain.ProductPrice) ProductPriceResponse {
 	return ProductPriceResponse{
 		Id:        productPrice.Id,
+		ProductId: productPrice.ProductId,
 		Price:     productPrice.Price,
 		CreatedBy: productPrice.CreatedBy,
 		CreatedAt: productPrice.CreatedAt,

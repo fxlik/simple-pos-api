@@ -12,16 +12,18 @@ import (
 )
 
 type ProductServiceImpl struct {
-	ProductRepository repository.ProductRepository
-	DB                *sql.DB
-	Validate          *validator.Validate
+	ProductRepository      repository.ProductRepository
+	ProductPriceRepository repository.ProductPriceRepository
+	DB                     *sql.DB
+	Validate               *validator.Validate
 }
 
-func NewProductServiceImpl(productRepository repository.ProductRepository, DB *sql.DB, validate *validator.Validate) *ProductServiceImpl {
+func NewProductServiceImpl(productRepository repository.ProductRepository, productPriceRepository repository.ProductPriceRepository, DB *sql.DB, validate *validator.Validate) *ProductServiceImpl {
 	return &ProductServiceImpl{
-		ProductRepository: productRepository,
-		DB:                DB,
-		Validate:          validate,
+		ProductRepository:      productRepository,
+		ProductPriceRepository: productPriceRepository,
+		DB:                     DB,
+		Validate:               validate,
 	}
 }
 
@@ -54,8 +56,16 @@ func (service *ProductServiceImpl) Update(ctx context.Context, request web.Produ
 
 	product, err := service.ProductRepository.FindById(ctx, tx, request.Id)
 	if err != nil {
+		//delete uploaded file if product is not found
+		helper.DeleteFile(request.Image)
 		panic(exception.NewNotFoundError(err.Error()))
 	}
+
+	errFile := helper.DeleteFile(product.Image)
+	if errFile != nil {
+		helper.PanicIfError(errFile)
+	}
+
 	product.CategoryId = request.CategoryId
 	product.Name = request.Name
 	product.Code = request.Code
@@ -75,10 +85,14 @@ func (service *ProductServiceImpl) Delete(ctx context.Context, productId int32) 
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
+	errFile := helper.DeleteFile(product.Image)
+	if errFile != nil {
+		helper.PanicIfError(errFile)
+	}
 	service.ProductRepository.Delete(ctx, tx, product)
 }
 
-func (service *ProductServiceImpl) FindById(ctx context.Context, productId int32) web.ProductResponse {
+func (service *ProductServiceImpl) FindById(ctx context.Context, productId int32) web.ProductWithPriceResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -87,7 +101,9 @@ func (service *ProductServiceImpl) FindById(ctx context.Context, productId int32
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-	return web.ToProductResponse(product)
+	productPrice, _ := service.ProductPriceRepository.FindOneByProductId(ctx, tx, productId)
+
+	return web.ToProductWithPriceResponse(product, productPrice)
 }
 
 func (service *ProductServiceImpl) FindAll(ctx context.Context) []web.ProductResponse {

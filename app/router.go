@@ -14,6 +14,9 @@ func NewRouter(
 	transactionTypeController controller.TransactionTypeController,
 	qtyTypeController controller.QtyTypeController,
 	productController controller.ProductController,
+	productPriceController controller.ProductPriceController,
+	transactionController controller.TransactionController,
+	transactionItemController controller.TransactionItemController,
 ) *httprouter.Router {
 	router := httprouter.New()
 	router.GET("/api/categories", categoryController.FindAll)
@@ -57,6 +60,25 @@ func NewRouter(
 	router.POST("/api/products", productController.Save)
 	router.PUT("/api/products/:productId", productController.Update)
 	router.DELETE("/api/products/:productId", productController.Delete)
+
+	router.GET("/api/product-price", productPriceController.FindAll)
+	router.GET("/api/product-price/by-id/:productPriceId", productPriceController.FindById)
+	router.GET("/api/product-price/by-product-id/:productId", productPriceController.FindOneByProductId)
+	router.POST("/api/product-price", productPriceController.Save)
+	router.PUT("/api/product-price/:productPriceId", productPriceController.Update)
+	router.DELETE("/api/product-price/:productPriceId", productPriceController.Delete)
+
+	router.GET("/api/transactions", transactionController.FindAll)
+	router.GET("/api/transactions/:transactionId", transactionController.FindById)
+	router.POST("/api/transactions", transactionController.Save)
+	router.PUT("/api/transactions/:transactionId", transactionController.Update)
+	router.DELETE("/api/transactions/:transactionId", transactionController.Delete)
+
+	router.GET("/api/transaction-item", transactionItemController.FindAll)
+	router.GET("/api/transaction-item/:transactionItemId", transactionItemController.FindById)
+	router.POST("/api/transaction-item", transactionItemController.Save)
+	router.PUT("/api/transaction-item/:transactionItemId", transactionItemController.Update)
+	router.DELETE("/api/transaction-item/:transactionItemId", transactionItemController.Delete)
 
 	router.PanicHandler = exception.ErrorHandler
 	return router

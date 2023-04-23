@@ -44,9 +44,18 @@ func InitializedServer() *http.Server {
 	qtyTypeServiceImpl := service.NewQtyTypeServiceImpl(qtyTypeRepositoryImpl, db, validate)
 	qtyTypeControllerImpl := controller.NewQtyTypeControllerImpl(qtyTypeServiceImpl)
 	productRepositoryImpl := repository.NewProductRepositoryImpl()
-	productServiceImpl := service.NewProductServiceImpl(productRepositoryImpl, db, validate)
+	productPriceRepositoryImpl := repository.NewProductPriceRepositoryImpl()
+	productServiceImpl := service.NewProductServiceImpl(productRepositoryImpl, productPriceRepositoryImpl, db, validate)
 	productControllerImpl := controller.NewProductControllerImpl(productServiceImpl)
-	router := app.NewRouter(categoryControllerImpl, levelControllerImpl, supplierControllerImpl, transactionStatusControllerImpl, transactionTypeControllerImpl, qtyTypeControllerImpl, productControllerImpl)
+	productPriceServiceImpl := service.NewProductPriceServiceImpl(productPriceRepositoryImpl, db, validate)
+	productPriceControllerImpl := controller.NewProductPriceControllerImpl(productPriceServiceImpl)
+	transactionRepositoryImpl := repository.NewTransactionRepositoryImpl()
+	transactionServiceImpl := service.NewTransactionServiceImpl(transactionRepositoryImpl, db, validate)
+	transactionControllerImpl := controller.NewTransactionControllerImpl(transactionServiceImpl)
+	transactionItemRepositoryImpl := repository.NewTransactionItemRepositoryImpl()
+	transactionItemServiceImpl := service.NewTransactionItemServiceImpl(transactionItemRepositoryImpl, db, validate)
+	transactionItemControllerImpl := controller.NewTransactionItemControllerImpl(transactionItemServiceImpl)
+	router := app.NewRouter(categoryControllerImpl, levelControllerImpl, supplierControllerImpl, transactionStatusControllerImpl, transactionTypeControllerImpl, qtyTypeControllerImpl, productControllerImpl, productPriceControllerImpl, transactionControllerImpl, transactionItemControllerImpl)
 	server := NewServer(router)
 	return server
 }
@@ -66,3 +75,9 @@ var transactionTypeSet = wire.NewSet(repository.NewTransactionTypeRepositoryImpl
 var qtyTypeSet = wire.NewSet(repository.NewQtyTypeRepositoryImpl, wire.Bind(new(repository.QtyTypeRepository), new(*repository.QtyTypeRepositoryImpl)), service.NewQtyTypeServiceImpl, wire.Bind(new(service.QtyTypeService), new(*service.QtyTypeServiceImpl)), controller.NewQtyTypeControllerImpl, wire.Bind(new(controller.QtyTypeController), new(*controller.QtyTypeControllerImpl)))
 
 var productSet = wire.NewSet(repository.NewProductRepositoryImpl, wire.Bind(new(repository.ProductRepository), new(*repository.ProductRepositoryImpl)), service.NewProductServiceImpl, wire.Bind(new(service.ProductService), new(*service.ProductServiceImpl)), controller.NewProductControllerImpl, wire.Bind(new(controller.ProductController), new(*controller.ProductControllerImpl)))
+
+var productPriceSet = wire.NewSet(repository.NewProductPriceRepositoryImpl, wire.Bind(new(repository.ProductPriceRepository), new(*repository.ProductPriceRepositoryImpl)), service.NewProductPriceServiceImpl, wire.Bind(new(service.ProductPriceService), new(*service.ProductPriceServiceImpl)), controller.NewProductPriceControllerImpl, wire.Bind(new(controller.ProductPriceController), new(*controller.ProductPriceControllerImpl)))
+
+var transactionSet = wire.NewSet(repository.NewTransactionRepositoryImpl, wire.Bind(new(repository.TransactionRepository), new(*repository.TransactionRepositoryImpl)), service.NewTransactionServiceImpl, wire.Bind(new(service.TransactionService), new(*service.TransactionServiceImpl)), controller.NewTransactionControllerImpl, wire.Bind(new(controller.TransactionController), new(*controller.TransactionControllerImpl)))
+
+var transactionItemSet = wire.NewSet(repository.NewTransactionItemRepositoryImpl, wire.Bind(new(repository.TransactionItemRepository), new(*repository.TransactionItemRepositoryImpl)), service.NewTransactionItemServiceImpl, wire.Bind(new(service.TransactionItemService), new(*service.TransactionItemServiceImpl)), controller.NewTransactionItemControllerImpl, wire.Bind(new(controller.TransactionItemController), new(*controller.TransactionItemControllerImpl)))

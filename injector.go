@@ -77,6 +77,33 @@ var productSet = wire.NewSet(
 	wire.Bind(new(controller.ProductController), new(*controller.ProductControllerImpl)),
 )
 
+var productPriceSet = wire.NewSet(
+	repository.NewProductPriceRepositoryImpl,
+	wire.Bind(new(repository.ProductPriceRepository), new(*repository.ProductPriceRepositoryImpl)),
+	service.NewProductPriceServiceImpl,
+	wire.Bind(new(service.ProductPriceService), new(*service.ProductPriceServiceImpl)),
+	controller.NewProductPriceControllerImpl,
+	wire.Bind(new(controller.ProductPriceController), new(*controller.ProductPriceControllerImpl)),
+)
+
+var transactionSet = wire.NewSet(
+	repository.NewTransactionRepositoryImpl,
+	wire.Bind(new(repository.TransactionRepository), new(*repository.TransactionRepositoryImpl)),
+	service.NewTransactionServiceImpl,
+	wire.Bind(new(service.TransactionService), new(*service.TransactionServiceImpl)),
+	controller.NewTransactionControllerImpl,
+	wire.Bind(new(controller.TransactionController), new(*controller.TransactionControllerImpl)),
+)
+
+var transactionItemSet = wire.NewSet(
+	repository.NewTransactionItemRepositoryImpl,
+	wire.Bind(new(repository.TransactionItemRepository), new(*repository.TransactionItemRepositoryImpl)),
+	service.NewTransactionItemServiceImpl,
+	wire.Bind(new(service.TransactionItemService), new(*service.TransactionItemServiceImpl)),
+	controller.NewTransactionItemControllerImpl,
+	wire.Bind(new(controller.TransactionItemController), new(*controller.TransactionItemControllerImpl)),
+)
+
 func InitializedServer() *http.Server {
 	wire.Build(
 		app.NewDB,
@@ -88,6 +115,9 @@ func InitializedServer() *http.Server {
 		transactionTypeSet,
 		qtyTypeSet,
 		productSet,
+		productPriceSet,
+		transactionSet,
+		transactionItemSet,
 		app.NewRouter,
 		wire.Bind(new(http.Handler), new(*httprouter.Router)),
 		NewServer,

@@ -211,3 +211,24 @@ DELETE http://localhost:3001/api/qty-type/1
 POST http://localhost:3001/api/qty-type
 Accept: application/x-www-form-urlencoded
 Content-Type: multipart/form-data
+
+
+
+#-----------------------------
+#MANAGE TRANSACTION
+#-----------------------------
+### Get all transaction
+GET http://localhost:3001/api/transactions
+Accept:application/json
+
+### Create new transaction
+POST http://localhost:3001/api/transactions
+Accept: application/json
+Content-Type: application/json
+
+{
+  "transaction_type_id": 2,
+  "supplier_id": 1,
+  "transaction_status_id": 2,
+  "created_by" : 1
+}
