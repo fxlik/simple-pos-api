@@ -13,13 +13,15 @@ import (
 
 type TransactionItemServiceImpl struct {
 	TransactionItemRepository repository.TransactionItemRepository
+	TransactionRepository     repository.TransactionRepository
 	DB                        *sql.DB
 	Validate                  *validator.Validate
 }
 
-func NewTransactionItemServiceImpl(transactionItemRepository repository.TransactionItemRepository, DB *sql.DB, validate *validator.Validate) *TransactionItemServiceImpl {
+func NewTransactionItemServiceImpl(transactionItemRepository repository.TransactionItemRepository, TransactionRepository repository.TransactionRepository, DB *sql.DB, validate *validator.Validate) *TransactionItemServiceImpl {
 	return &TransactionItemServiceImpl{
 		TransactionItemRepository: transactionItemRepository,
+		TransactionRepository:     TransactionRepository,
 		DB:                        DB,
 		Validate:                  validate,
 	}
@@ -95,5 +97,20 @@ func (service *TransactionItemServiceImpl) FindAll(ctx context.Context) []web.Tr
 	defer helper.CommitOrRollback(tx)
 
 	transactionItems := service.TransactionItemRepository.FindAll(ctx, tx)
+	return web.ToTransactionItemResponses(transactionItems)
+}
+
+func (service *TransactionItemServiceImpl) FindAllByTransactionId(ctx context.Context, transactionId int32) []web.TransactionItemResponse {
+	tx, errDb := service.DB.Begin()
+	helper.PanicIfError(errDb)
+	defer helper.CommitOrRollback(tx)
+
+	//check if transaction is exists
+	_, errFindTransaction := service.TransactionRepository.FindById(ctx, tx, transactionId)
+	if errFindTransaction != nil {
+		panic(exception.NewNotFoundError(errFindTransaction.Error()))
+	}
+
+	transactionItems := service.TransactionItemRepository.FindAllByTransactionId(ctx, tx, transactionId)
 	return web.ToTransactionItemResponses(transactionItems)
 }

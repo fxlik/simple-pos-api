@@ -28,10 +28,10 @@ func NewProductServiceImpl(productRepository repository.ProductRepository, produ
 }
 
 func (service *ProductServiceImpl) Save(ctx context.Context, request web.ProductCreateRequest) web.ProductResponse {
-	err := service.Validate.Struct(request)
-	helper.PanicIfError(err)
-	tx, err := service.DB.Begin()
-	helper.PanicIfError(err)
+	errValidate := service.Validate.Struct(request)
+	helper.PanicIfError(errValidate)
+	tx, errDb := service.DB.Begin()
+	helper.PanicIfError(errDb)
 	defer helper.CommitOrRollback(tx)
 
 	product := domain.Product{
@@ -44,6 +44,14 @@ func (service *ProductServiceImpl) Save(ctx context.Context, request web.Product
 	}
 
 	product = service.ProductRepository.Save(ctx, tx, product)
+	productPrice := domain.ProductPrice{
+		ProductId: product.Id,
+		Price:     request.Price,
+		CreatedBy: request.CreatedBy,
+		CreatedAt: helper.GetTime(),
+		UpdatedAt: helper.GetTime(),
+	}
+	productPrice = service.ProductPriceRepository.Save(ctx, tx, productPrice)
 	return web.ToProductResponse(product)
 }
 
@@ -77,18 +85,19 @@ func (service *ProductServiceImpl) Update(ctx context.Context, request web.Produ
 }
 
 func (service *ProductServiceImpl) Delete(ctx context.Context, productId int32) {
-	tx, err := service.DB.Begin()
-	helper.PanicIfError(err)
+	tx, errDb := service.DB.Begin()
+	helper.PanicIfError(errDb)
 	defer helper.CommitOrRollback(tx)
 
-	product, err := service.ProductRepository.FindById(ctx, tx, productId)
-	if err != nil {
-		panic(exception.NewNotFoundError(err.Error()))
+	product, errFind := service.ProductRepository.FindById(ctx, tx, productId)
+	if errFind != nil {
+		panic(exception.NewNotFoundError(errFind.Error()))
 	}
 	errFile := helper.DeleteFile(product.Image)
 	if errFile != nil {
 		helper.PanicIfError(errFile)
 	}
+	service.ProductPriceRepository.DeleteByProductId(ctx, tx, productId)
 	service.ProductRepository.Delete(ctx, tx, product)
 }
 

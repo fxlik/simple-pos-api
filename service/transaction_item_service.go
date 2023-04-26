@@ -11,4 +11,5 @@ type TransactionItemService interface {
 	Delete(ctx context.Context, transactionItemId int32)
 	FindById(ctx context.Context, transactionItemId int32) web.TransactionItemResponse
 	FindAll(ctx context.Context) []web.TransactionItemResponse
+	FindAllByTransactionId(ctx context.Context, transactionId int32) []web.TransactionItemResponse
 }

@@ -53,7 +53,7 @@ func InitializedServer() *http.Server {
 	transactionServiceImpl := service.NewTransactionServiceImpl(transactionRepositoryImpl, db, validate)
 	transactionControllerImpl := controller.NewTransactionControllerImpl(transactionServiceImpl)
 	transactionItemRepositoryImpl := repository.NewTransactionItemRepositoryImpl()
-	transactionItemServiceImpl := service.NewTransactionItemServiceImpl(transactionItemRepositoryImpl, db, validate)
+	transactionItemServiceImpl := service.NewTransactionItemServiceImpl(transactionItemRepositoryImpl, transactionRepositoryImpl, db, validate)
 	transactionItemControllerImpl := controller.NewTransactionItemControllerImpl(transactionItemServiceImpl)
 	router := app.NewRouter(categoryControllerImpl, levelControllerImpl, supplierControllerImpl, transactionStatusControllerImpl, transactionTypeControllerImpl, qtyTypeControllerImpl, productControllerImpl, productPriceControllerImpl, transactionControllerImpl, transactionItemControllerImpl)
 	server := NewServer(router)

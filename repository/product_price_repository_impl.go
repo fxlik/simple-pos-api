@@ -20,8 +20,8 @@ func (repository *ProductPriceRepositoryImpl) Save(ctx context.Context, tx *sql.
 	result, err := tx.ExecContext(ctx, SQL, productPrice.ProductId, productPrice.Price, productPrice.CreatedBy, productPrice.CreatedAt, productPrice.UpdatedAt)
 	helper.PanicIfError(err)
 
-	id, err := result.LastInsertId()
-	helper.PanicIfError(err)
+	id, errId := result.LastInsertId()
+	helper.PanicIfError(errId)
 	productPrice.Id = int32(id)
 	return productPrice
 }
@@ -36,6 +36,12 @@ func (repository *ProductPriceRepositoryImpl) Update(ctx context.Context, tx *sq
 func (repository *ProductPriceRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, productPrice domain.ProductPrice) {
 	SQL := "DELETE FROM product_price WHERE id =?"
 	_, err := tx.ExecContext(ctx, SQL, productPrice.Id)
+	helper.PanicIfError(err)
+}
+
+func (repository *ProductPriceRepositoryImpl) DeleteByProductId(ctx context.Context, tx *sql.Tx, productId int32) {
+	SQL := "DELETE FROM product_price WHERE product_id = ?"
+	_, err := tx.ExecContext(ctx, SQL, productId)
 	helper.PanicIfError(err)
 }
 

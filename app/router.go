@@ -75,7 +75,8 @@ func NewRouter(
 	router.DELETE("/api/transactions/:transactionId", transactionController.Delete)
 
 	router.GET("/api/transaction-item", transactionItemController.FindAll)
-	router.GET("/api/transaction-item/:transactionItemId", transactionItemController.FindById)
+	router.GET("/api/transaction-item/by-id/:transactionItemId", transactionItemController.FindById)
+	router.GET("/api/transaction-item/by-transaction-id/:transactionId", transactionItemController.FindAllByTransactionId)
 	router.POST("/api/transaction-item", transactionItemController.Save)
 	router.PUT("/api/transaction-item/:transactionItemId", transactionItemController.Update)
 	router.DELETE("/api/transaction-item/:transactionItemId", transactionItemController.Delete)

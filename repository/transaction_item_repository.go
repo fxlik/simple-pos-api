@@ -12,4 +12,5 @@ type TransactionItemRepository interface {
 	Delete(ctx context.Context, tx *sql.Tx, item domain.TransactionItem)
 	FindById(ctx context.Context, tx *sql.Tx, transactionItemId int32) (domain.TransactionItem, error)
 	FindAll(ctx context.Context, tx *sql.Tx) []domain.TransactionItem
+	FindAllByTransactionId(ctx context.Context, tx *sql.Tx, transactionId int32) []domain.TransactionItem
 }

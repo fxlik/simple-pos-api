@@ -87,3 +87,17 @@ func (controller *TransactionItemControllerImpl) FindAll(writer http.ResponseWri
 	}
 	helper.WriteToResponseBody(writer, webResponse)
 }
+
+func (controller *TransactionItemControllerImpl) FindAllByTransactionId(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	transactionId := params.ByName("transactionId")
+	id, errConv := strconv.Atoi(transactionId)
+	helper.PanicIfError(errConv)
+
+	transactionItemResponses := controller.TransactionItemService.FindAllByTransactionId(request.Context(), int32(id))
+	webResponse := web.Response{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   transactionItemResponses,
+	}
+	helper.WriteToResponseBody(writer, webResponse)
+}

@@ -19,8 +19,8 @@ func (repository *TransactionItemRepositoryImpl) Save(ctx context.Context, tx *s
 	SQL := "INSERT INTO transaction_items(transaction_id, product_id, qty, price, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)"
 	result, err := tx.ExecContext(ctx, SQL, item.TransactionId, item.ProductId, item.Qty, item.Price, item.CreatedAt, item.UpdatedAt)
 	helper.PanicIfError(err)
-	id, err := result.LastInsertId()
-	helper.PanicIfError(err)
+	id, errId := result.LastInsertId()
+	helper.PanicIfError(errId)
 	item.Id = int32(id)
 	return item
 }
@@ -46,9 +46,9 @@ func (repository *TransactionItemRepositoryImpl) FindById(ctx context.Context, t
 
 	transactionItem := domain.TransactionItem{}
 	if rows.Next() {
-		err := rows.Scan(&transactionItem.Id, &transactionItem.TransactionId, &transactionItem.ProductId, &transactionItem.Qty,
+		errScan := rows.Scan(&transactionItem.Id, &transactionItem.TransactionId, &transactionItem.ProductId, &transactionItem.Qty,
 			&transactionItem.Price, &transactionItem.CreatedAt, &transactionItem.UpdatedAt)
-		helper.PanicIfError(err)
+		helper.PanicIfError(errScan)
 		return transactionItem, nil
 	} else {
 		return transactionItem, errors.New("transaction_item is not found")
@@ -64,9 +64,26 @@ func (repository *TransactionItemRepositoryImpl) FindAll(ctx context.Context, tx
 	var transactionItems []domain.TransactionItem
 	for rows.Next() {
 		transactionItem := domain.TransactionItem{}
-		err := rows.Scan(&transactionItem.Id, &transactionItem.TransactionId, &transactionItem.ProductId, &transactionItem.Qty,
+		errScan := rows.Scan(&transactionItem.Id, &transactionItem.TransactionId, &transactionItem.ProductId, &transactionItem.Qty,
 			&transactionItem.Price, &transactionItem.CreatedAt, &transactionItem.UpdatedAt)
-		helper.PanicIfError(err)
+		helper.PanicIfError(errScan)
+		transactionItems = append(transactionItems, transactionItem)
+	}
+	return transactionItems
+}
+
+func (repository *TransactionItemRepositoryImpl) FindAllByTransactionId(ctx context.Context, tx *sql.Tx, transactionId int32) []domain.TransactionItem {
+	SQL := "SELECT id, transaction_id, product_id, qty, price, created_at, updated_at FROM transaction_items WHERE transaction_id = ?"
+	rows, errFind := tx.QueryContext(ctx, SQL, transactionId)
+	helper.PanicIfError(errFind)
+	defer rows.Close()
+
+	var transactionItems []domain.TransactionItem
+	for rows.Next() {
+		transactionItem := domain.TransactionItem{}
+		errScan := rows.Scan(&transactionItem.Id, &transactionItem.TransactionId, &transactionItem.ProductId, &transactionItem.Qty,
+			&transactionItem.Price, &transactionItem.CreatedAt, &transactionItem.UpdatedAt)
+		helper.PanicIfError(errScan)
 		transactionItems = append(transactionItems, transactionItem)
 	}
 	return transactionItems

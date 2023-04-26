@@ -20,8 +20,8 @@ func (repository *ProductRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, p
 	result, err := tx.ExecContext(ctx, SQL, product.CategoryId, product.Name, product.Code, product.Image, product.CreatedAt, product.UpdatedAt)
 	helper.PanicIfError(err)
 
-	id, err := result.LastInsertId()
-	helper.PanicIfError(err)
+	id, errId := result.LastInsertId()
+	helper.PanicIfError(errId)
 	product.Id = int32(id)
 	return product
 }

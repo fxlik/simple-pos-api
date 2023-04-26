@@ -30,16 +30,16 @@ func (controller *ProductControllerImpl) Save(writer http.ResponseWriter, reques
 
 	//file upload handing
 	var fileName string
-	file, fileHeader, err := request.FormFile("image")
-	helper.PanicIfError(err)
+	file, fileHeader, errReq := request.FormFile("image")
+	helper.PanicIfError(errReq)
 	defer file.Close()
-	fileByte, err := io.ReadAll(file)
-	helper.PanicIfError(err)
+	fileByte, errRead := io.ReadAll(file)
+	helper.PanicIfError(errRead)
 
 	if filetype.IsImage(fileByte) {
 		fileName = "resources/uploads/" + "product-" + strconv.FormatInt(time.Now().Unix(), 10) + filepath.Ext(fileHeader.Filename)
-		err := os.WriteFile(fileName, fileByte, 0666)
-		helper.PanicIfError(err)
+		errWrite := os.WriteFile(fileName, fileByte, 0666)
+		helper.PanicIfError(errWrite)
 
 		//cara yang dikomen dibawah ini, sebaiknya menggunakan nama file asli, karena hanya mengkopi data
 		//dari satu direktori ke direktori lain (direktori project)
