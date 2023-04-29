@@ -14,14 +14,16 @@ import (
 type TransactionItemServiceImpl struct {
 	TransactionItemRepository repository.TransactionItemRepository
 	TransactionRepository     repository.TransactionRepository
+	ProductPriceRepository    repository.ProductPriceRepository
 	DB                        *sql.DB
 	Validate                  *validator.Validate
 }
 
-func NewTransactionItemServiceImpl(transactionItemRepository repository.TransactionItemRepository, TransactionRepository repository.TransactionRepository, DB *sql.DB, validate *validator.Validate) *TransactionItemServiceImpl {
+func NewTransactionItemServiceImpl(transactionItemRepository repository.TransactionItemRepository, transactionRepository repository.TransactionRepository, productPriceRepository repository.ProductPriceRepository, DB *sql.DB, validate *validator.Validate) *TransactionItemServiceImpl {
 	return &TransactionItemServiceImpl{
 		TransactionItemRepository: transactionItemRepository,
-		TransactionRepository:     TransactionRepository,
+		TransactionRepository:     transactionRepository,
+		ProductPriceRepository:    productPriceRepository,
 		DB:                        DB,
 		Validate:                  validate,
 	}
@@ -34,15 +36,43 @@ func (service *TransactionItemServiceImpl) Save(ctx context.Context, request web
 	helper.PanicIfError(errDb)
 	defer helper.CommitOrRollback(tx)
 
-	transactionItem := domain.TransactionItem{
-		TransactionId: request.TransactionId,
-		ProductId:     request.ProductId,
-		Qty:           request.Qty,
-		Price:         request.Price,
-		CreatedAt:     helper.GetTime(),
-		UpdatedAt:     helper.GetTime(),
+	//FIND PRODUCT PRICE FIRST
+	productPrice, errFindProductPrice := service.ProductPriceRepository.FindOneByProductId(ctx, tx, request.ProductId)
+	if errFindProductPrice != nil {
+		panic(exception.NewNotFoundError(errFindProductPrice.Error()))
 	}
-	transactionItem = service.TransactionItemRepository.Save(ctx, tx, transactionItem)
+
+	//FIND IF TRANSACTION ITEM IS EXIST WITH THE SAME TRANSACTION AND PRODUCT ID
+	//RETURN IS BOOLEAN (TRUE OR FALSE)
+	transactionItemCheck, errCheck := service.TransactionItemRepository.CheckIfExistByTransactionIdAndProductId(ctx, tx, request.TransactionId, request.ProductId)
+	if errCheck != nil {
+		helper.PanicIfError(errCheck)
+	}
+
+	transactionItem := domain.TransactionItem{}
+
+	if transactionItemCheck == true {
+		transactionItemExist, _ := service.TransactionItemRepository.FindOneByTransactionIdAndProductId(ctx, tx, request.TransactionId, request.ProductId)
+		transactionItem.Id = transactionItemExist.Id
+		transactionItem.TransactionId = request.TransactionId
+		transactionItem.ProductId = request.ProductId
+		transactionItem.Qty = transactionItemExist.Qty + request.Qty
+		transactionItem.Price = productPrice.Price
+		transactionItem.UpdatedAt = helper.GetTime()
+
+		transactionItem = service.TransactionItemRepository.Update(ctx, tx, transactionItem)
+	} else {
+		//MAKE A NEW ITEM
+		transactionItem.TransactionId = request.TransactionId
+		transactionItem.ProductId = request.ProductId
+		transactionItem.Qty = request.Qty
+		transactionItem.Price = productPrice.Price
+		transactionItem.CreatedAt = helper.GetTime()
+		transactionItem.UpdatedAt = helper.GetTime()
+
+		transactionItem = service.TransactionItemRepository.Save(ctx, tx, transactionItem)
+	}
+
 	return web.ToTransactionItemResponse(transactionItem)
 }
 

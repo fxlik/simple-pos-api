@@ -29,7 +29,11 @@ func NewProductServiceImpl(productRepository repository.ProductRepository, produ
 
 func (service *ProductServiceImpl) Save(ctx context.Context, request web.ProductCreateRequest) web.ProductResponse {
 	errValidate := service.Validate.Struct(request)
-	helper.PanicIfError(errValidate)
+	//helper.PanicIfError(errValidate)
+	if errValidate != nil {
+		panic(errValidate.Error())
+		helper.DeleteFile(request.Image)
+	}
 	tx, errDb := service.DB.Begin()
 	helper.PanicIfError(errDb)
 	defer helper.CommitOrRollback(tx)

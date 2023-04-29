@@ -55,6 +55,48 @@ func (repository *TransactionItemRepositoryImpl) FindById(ctx context.Context, t
 	}
 }
 
+func (repository *TransactionItemRepositoryImpl) CheckIfExistByTransactionIdAndProductId(ctx context.Context, tx *sql.Tx, transactionId int32, productId int32) (bool, error) {
+	SQL := "SELECT COUNT(*) FROM transaction_items WHERE transaction_id = ? AND product_id = ?"
+	rows, err := tx.QueryContext(ctx, SQL, transactionId, productId)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+
+	var count int
+	if rows.Next() {
+		errScan := rows.Scan(&count)
+		if errScan != nil {
+			return false, errScan
+		}
+
+		if count > 0 {
+			return true, nil
+		} else {
+			return false, nil
+		}
+	} else {
+		return false, errors.New("transaction_item is not found")
+	}
+}
+
+func (repository *TransactionItemRepositoryImpl) FindOneByTransactionIdAndProductId(ctx context.Context, tx *sql.Tx, transactionId int32, productId int32) (domain.TransactionItem, error) {
+	SQL := "SELECT id, transaction_id, product_id, qty, price, created_at, updated_at FROM transaction_items WHERE transaction_id = ? AND product_id = ?"
+	rows, err := tx.QueryContext(ctx, SQL, transactionId, productId)
+	helper.PanicIfError(err)
+	defer rows.Close()
+
+	transactionItem := domain.TransactionItem{}
+	if rows.Next() {
+		errScan := rows.Scan(&transactionItem.Id, &transactionItem.TransactionId, &transactionItem.ProductId, &transactionItem.Qty,
+			&transactionItem.Price, &transactionItem.CreatedAt, &transactionItem.UpdatedAt)
+		helper.PanicIfError(errScan)
+		return transactionItem, nil
+	} else {
+		return transactionItem, errors.New("transaction_item is not found")
+	}
+}
+
 func (repository *TransactionItemRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.TransactionItem {
 	SQL := "SELECT * FROM transaction_items"
 	rows, err := tx.QueryContext(ctx, SQL)
